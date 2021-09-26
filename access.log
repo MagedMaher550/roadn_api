@@ -1,0 +1,4 @@
+::ffff:192.168.1.9 - - [26/Sep/2021:11:13:16 +0000] "POST /captain/login HTTP/1.1" 200 45 "-" "Dart/2.14 (dart:io)"
+::ffff:192.168.1.9 - - [26/Sep/2021:11:13:16 +0000] "GET /captain/getInfo/0123456789123 HTTP/1.1" 200 751 "-" "Dart/2.14 (dart:io)"
+::ffff:192.168.1.9 - - [26/Sep/2021:11:13:28 +0000] "POST /captain/changeCaptainState HTTP/1.1" 200 49 "-" "Dart/2.14 (dart:io)"
+::ffff:192.168.1.9 - - [26/Sep/2021:11:13:32 +0000] "POST /captain/changeCaptainState HTTP/1.1" 200 49 "-" "Dart/2.14 (dart:io)"
