@@ -91,6 +91,7 @@ exports.postRegister = (req, res, next) => {
                             isAvailable: true,
                             dateOfRenewal: dateOfRenewal,
                             isSubscribed: false,
+                            transactionHistory: [],
                             driverData: {
                                 personalImg: `https://${process.env.AWS_BUCKET_NAME}.s3.amazonaws.com/${imagesIds[
                                     imagesOriginalNames['profilePicture']
@@ -338,27 +339,27 @@ exports.postLogin = (req, res, next) => {
 
 exports.confirmPayment = (req, res, next) => {
     const id = req.body.id;
-    
+
     let dateObj = new Date(); // Today!
-    
-    Date.isLeapYear = function (year) { 
-        return (((year % 4 === 0) && (year % 100 !== 0)) || (year % 400 === 0)); 
+
+    Date.isLeapYear = function (year) {
+        return (((year % 4 === 0) && (year % 100 !== 0)) || (year % 400 === 0));
     };
-    
+
     Date.getDaysInMonth = function (year, month) {
         return [31, (Date.isLeapYear(year) ? 29 : 28), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][month];
     };
-    
-    Date.prototype.isLeapYear = function () { 
-        return Date.isLeapYear(this.getFullYear()); 
+
+    Date.prototype.isLeapYear = function () {
+        return Date.isLeapYear(this.getFullYear());
     };
-    
-    Date.prototype.getDaysInMonth = function () { 
+
+    Date.prototype.getDaysInMonth = function () {
         return Date.getDaysInMonth(this.getFullYear(), this.getMonth());
     };
-    
+
     Date.prototype.addMonths = function (value) {
-        var n = this.getDate();
+        let n = this.getDate();
         this.setDate(1);
         this.setMonth(this.getMonth() + value);
         this.setDate(Math.min(n, this.getDaysInMonth()));
@@ -374,19 +375,58 @@ exports.confirmPayment = (req, res, next) => {
 
     let newDateOfRenewal = year + "/" + month + "/" + day;
 
-    Captain.findOneAndUpdate({
+    Captain.findOne({
             "driverData.idNumber": id
-        }, {
-            dateOfRenewal: newDateOfRenewal
+        }).then(captain => {
+            let oldTransactionHistory = captain.transactionHistory;
+
+            let today = new Date();
+            let date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+            let time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+            let dateTime = (date + ' ' + time).toString();
+            let newTransactionHistory = [...oldTransactionHistory, {
+                "dateOfPayment": dateTime
+            }];
+
+            return newTransactionHistory;
+
         })
-        .then(val => {
-            console.log(val);
-            res.status(200).json({
-                message: "Subscription confirmed."
-            });
+        .then(newTransactionHistory => {
+            Captain.findOneAndUpdate({
+                    "driverData.idNumber": id
+                }, {
+                    dateOfRenewal: newDateOfRenewal,
+                    transactionHistory: newTransactionHistory
+                })
+                .then(val => {
+                    res.status(200).json({
+                        message: "Subscription confirmed."
+                    });
+                })
+                .catch(err => {
+                    console.log(err);
+                })
         })
         .catch(err => {
             console.log(err);
         })
+}
 
+exports.userIdExist = (req, res, next) => {
+    const id = req.params.id;
+
+    Captain.findOne({
+            "driverData.idNumber": id
+        })
+        .then(captain => {
+            if (captain) {
+                res.status(200).json({
+                    exist: true
+                });
+            } else {
+                res.status(200).json({
+                    exist: false
+                });
+            }
+        })
 }

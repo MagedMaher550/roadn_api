@@ -6,19 +6,20 @@ exports.getTrips = (req, res, next) => {
     const to = req.param('to');
     const nextData = parseInt(req.param('next'));
 
-
     Captain.aggregate([{
             $match: {
                 "driverData.trips": {
                     $elemMatch: {
                         $and: [{
-                            'from': {
-                                $regex: new RegExp(from)
-                            }
+                            'from': from
+                            // {
+                            //     $regex: new RegExp(from)
+                            // }
                         }, {
-                            'to': {
-                                $regex: new RegExp(to)
-                            },
+                            'to': to
+                            // {
+                            //     $regex: new RegExp(to)
+                            // },
                         }]
                     }
                 }
@@ -56,26 +57,53 @@ exports.getTrips = (req, res, next) => {
 
 exports.getTripsSorted = (req, res, next) => {
 
+    // const isEqualOrIsSub = (search, text) => {
+    //     let resText = "not found!!";
+
+    //     if (search.length == text.length) {
+    //         if (search == text) {
+    //             resText = search;
+    //         }
+    //     } else {
+    //         if (text.includes(search)) {
+    //             resText = search;
+    //         }
+    //     }
+
+
+    //     // console.log("search: ", search);
+    //     // console.log("text: ", text);
+    //     // console.log("result: ", resText);
+    //     // console.log("");
+    //     // console.log("");
+
+    //     return resText;
+    // }
+
     const from = req.param('from');
     const to = req.param('to');
     const nextData = parseInt(req.param('next'));
     const sortBy = req.param('sort');
-    let sort = "";
-    let value = 0;
+
+
+
 
     if (sortBy == "Price (Lowest)" || sortBy == "السعر (الأقل)") {
+
         Captain.aggregate([{
                 $match: {
                     "driverData.trips": {
                         $elemMatch: {
                             $and: [{
-                                'from': {
-                                    $regex: new RegExp(from)
-                                }
+                                'from': from
+                                // {
+                                //     $regex: new RegExp(from)
+                                // }
                             }, {
-                                'to': {
-                                    $regex: new RegExp(to)
-                                }
+                                'to': to
+                                // {
+                                //     $regex: new RegExp(to)
+                                // }
                             }]
                         }
                     }
@@ -99,9 +127,11 @@ exports.getTripsSorted = (req, res, next) => {
                             input: "$driverData.trips",
                             as: "trip",
                             cond: {
-                                $and: [{
+                                $and: [
+                                    {
                                         $eq: ["$$trip.from", from]
                                     },
+
                                     {
                                         $eq: ["$$trip.to", to]
                                     },
@@ -135,13 +165,15 @@ exports.getTripsSorted = (req, res, next) => {
                     "driverData.trips": {
                         $elemMatch: {
                             $and: [{
-                                'from': {
-                                    $regex: new RegExp(from)
-                                }
+                                'from': from
+                                // {
+                                //     $regex: new RegExp(from)
+                                // }
                             }, {
-                                'to': {
-                                    $regex: new RegExp(to)
-                                }
+                                'to': to
+                                // {
+                                //     $regex: new RegExp(to)
+                                // }
                             }]
                         }
                     }
@@ -201,13 +233,15 @@ exports.getTripsSorted = (req, res, next) => {
                     "driverData.trips": {
                         $elemMatch: {
                             $and: [{
-                                'from': {
-                                    $regex: new RegExp(from)
-                                }
+                                'from': from
+                                // {
+                                //     $regex: new RegExp(from)
+                                // }
                             }, {
-                                'to': {
-                                    $regex: new RegExp(to)
-                                }
+                                'to': to
+                                // {
+                                //     $regex: new RegExp(to)
+                                // }
                             }]
                         }
                     }
@@ -250,13 +284,15 @@ exports.getTripsSorted = (req, res, next) => {
                     "driverData.trips": {
                         $elemMatch: {
                             $and: [{
-                                'from': {
-                                    $regex: new RegExp(from)
-                                }
+                                'from': from
+                                // {
+                                //     $regex: new RegExp(from)
+                                // }
                             }, {
-                                'to': {
-                                    $regex: new RegExp(to)
-                                }
+                                'to': to
+                                // {
+                                //     $regex: new RegExp(to)
+                                // }
                             }]
                         }
                     }

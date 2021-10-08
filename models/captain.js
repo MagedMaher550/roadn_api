@@ -15,6 +15,12 @@ const captainSchema = new Schema({
         type: Boolean,
         required: true
     },
+    transactionHistory: [{
+        dateOfPayment: {
+            type: String,
+            required: true
+        },
+    }],
     driverData: {
         personalImg: {
             type: String,
