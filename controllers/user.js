@@ -1,5 +1,12 @@
 const Captain = require("../models/captain");
 
+
+const toUpperFirstLetter = word => {
+    let firstLetter = word[0].toUpperCase();
+    return firstLetter + word.substring(1);
+}
+
+
 exports.getTrips = (req, res, next) => {
 
     const from = req.param('from');
@@ -11,12 +18,30 @@ exports.getTrips = (req, res, next) => {
                 "driverData.trips": {
                     $elemMatch: {
                         $and: [{
-                            'from': from
+                            $or: [{
+                                    'from': from
+                                },
+                                {
+                                    'from': from.toString().toLowerCase()
+                                },
+                                {
+                                    'from': toUpperFirstLetter(from)
+                                },
+                            ]
                             // {
                             //     $regex: new RegExp(from)
                             // }
                         }, {
-                            'to': to
+                            $or: [{
+                                    'to': to
+                                },
+                                {
+                                    'to': to.toString().toLowerCase()
+                                },
+                                {
+                                    'to': toUpperFirstLetter(to)
+                                },
+                            ]
                             // {
                             //     $regex: new RegExp(to)
                             // },
@@ -95,15 +120,33 @@ exports.getTripsSorted = (req, res, next) => {
                     "driverData.trips": {
                         $elemMatch: {
                             $and: [{
-                                'from': from
+                                $or: [{
+                                        'from': from
+                                    },
+                                    {
+                                        'from': from.toString().toLowerCase()
+                                    },
+                                    {
+                                        'from': toUpperFirstLetter(from)
+                                    },
+                                ]
                                 // {
                                 //     $regex: new RegExp(from)
                                 // }
                             }, {
-                                'to': to
+                                $or: [{
+                                        'to': to
+                                    },
+                                    {
+                                        'to': to.toString().toLowerCase()
+                                    },
+                                    {
+                                        'to': toUpperFirstLetter(to)
+                                    },
+                                ]
                                 // {
                                 //     $regex: new RegExp(to)
-                                // }
+                                // },
                             }]
                         }
                     }
@@ -127,13 +170,30 @@ exports.getTripsSorted = (req, res, next) => {
                             input: "$driverData.trips",
                             as: "trip",
                             cond: {
-                                $and: [
-                                    {
-                                        $eq: ["$$trip.from", from]
+                                $and: [{
+                                        $or: [{
+                                                $eq: ["$$trip.from", from]
+                                            },
+                                            {
+                                                $eq: ["$$trip.from", from.toString().toLowerCase()]
+                                            },
+                                            {
+                                                $eq: ["$$trip.from", toUpperFirstLetter(from)]
+                                            },
+                                        ]
                                     },
 
                                     {
-                                        $eq: ["$$trip.to", to]
+                                        $or: [{
+                                                $eq: ["$$trip.to", to]
+                                            },
+                                            {
+                                                $eq: ["$$trip.to", to.toString().toLowerCase()]
+                                            },
+                                            {
+                                                $eq: ["$$trip.to", toUpperFirstLetter(to)]
+                                            },
+                                        ]
                                     },
                                 ]
                             }
@@ -165,15 +225,34 @@ exports.getTripsSorted = (req, res, next) => {
                     "driverData.trips": {
                         $elemMatch: {
                             $and: [{
-                                'from': from
+                                $or: [{
+                                        'from': from
+                                    },
+                                    {
+                                        'from': from.toString().toLowerCase()
+                                    },
+                                    {
+                                        'from': toUpperFirstLetter(from)
+                                    }
+
+                                ]
                                 // {
                                 //     $regex: new RegExp(from)
                                 // }
                             }, {
-                                'to': to
+                                $or: [{
+                                        'to': to
+                                    },
+                                    {
+                                        'to': to.toString().toLowerCase()
+                                    },
+                                    {
+                                        'to': toUpperFirstLetter(to)
+                                    }
+                                ]
                                 // {
                                 //     $regex: new RegExp(to)
-                                // }
+                                // },
                             }]
                         }
                     }
@@ -198,11 +277,29 @@ exports.getTripsSorted = (req, res, next) => {
                             as: "trip",
                             cond: {
                                 $and: [{
-                                        $eq: ["$$trip.from", from]
+                                        $or: [{
+                                                $eq: ["$$trip.from", from]
+                                            },
+                                            {
+                                                $eq: ["$$trip.from", from.toString().toLowerCase()]
+                                            },
+                                            {
+                                                $eq: ["$$trip.from", toUpperFirstLetter(from)]
+                                            }
+                                        ]
                                     },
                                     {
-                                        $eq: ["$$trip.to", to]
-                                    },
+                                        $or: [{
+                                                $eq: ["$$trip.from", to]
+                                            },
+                                            {
+                                                $eq: ["$$trip.from", to.toString().toLowerCase()]
+                                            },
+                                            {
+                                                $eq: ["$$trip.from", toUpperFirstLetter(to)]
+                                            }
+                                        ]
+                                    }
                                 ]
                             }
                         }
@@ -233,15 +330,33 @@ exports.getTripsSorted = (req, res, next) => {
                     "driverData.trips": {
                         $elemMatch: {
                             $and: [{
-                                'from': from
+                                $or: [{
+                                        'from': from
+                                    },
+                                    {
+                                        'from': from.toString().toLowerCase()
+                                    },
+                                    {
+                                        'from': toUpperFirstLetter(from)
+                                    }
+                                ]
                                 // {
                                 //     $regex: new RegExp(from)
                                 // }
                             }, {
-                                'to': to
+                                $or: [{
+                                        'to': to
+                                    },
+                                    {
+                                        'to': to.toString().toLowerCase()
+                                    },
+                                    {
+                                        'to': toUpperFirstLetter(to)
+                                    }
+                                ]
                                 // {
                                 //     $regex: new RegExp(to)
-                                // }
+                                // },
                             }]
                         }
                     }
@@ -284,15 +399,34 @@ exports.getTripsSorted = (req, res, next) => {
                     "driverData.trips": {
                         $elemMatch: {
                             $and: [{
-                                'from': from
+                                $or: [{
+                                        'from': from
+                                    },
+                                    {
+                                        'from': from.toString().toLowerCase()
+                                    },
+                                    {
+                                        'from': toUpperFirstLetter(from)
+                                    }
+
+                                ]
                                 // {
                                 //     $regex: new RegExp(from)
                                 // }
                             }, {
-                                'to': to
+                                $or: [{
+                                        'to': to
+                                    },
+                                    {
+                                        'to': to.toString().toLowerCase()
+                                    },
+                                    {
+                                        'to': toUpperFirstLetter(to)
+                                    }
+                                ]
                                 // {
                                 //     $regex: new RegExp(to)
-                                // }
+                                // },
                             }]
                         }
                     }
