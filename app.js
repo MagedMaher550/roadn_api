@@ -57,7 +57,7 @@ mongoose.connect(process.env.MONGODB_URI, {
         useNewUrlParser: true
     })
     .then(result => {
-        app.listen(process.env.PORT, HOST_NAME);
+        app.listen(process.env.PORT, process.env.HOST_NAME);
     })
     .catch(err => {
         console.log(err);
