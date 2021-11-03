@@ -18,6 +18,7 @@ router.post('/login',captainController.postLogin);
 router.post('/confirmPayment',captainController.confirmPayment);
 
 router.get("/userIdExist/:id", captainController.userIdExist);
+router.get("/trialEnded/:id", captainController.trialEnded);
 router.get('/getInfo/:id',captainController.getCaptainData);
 router.get('/getInfoWithoutImg/:id',captainController.getCaptainDataWithoutImg);
 

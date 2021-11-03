@@ -7,6 +7,10 @@ const captainSchema = new Schema({
         type: Boolean,
         required: false
     },
+    trialEnded: {
+        type: Boolean,
+        required: false
+    },
     dateOfRenewal: {
         type: String,
         required: true

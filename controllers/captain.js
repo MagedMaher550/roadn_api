@@ -5,13 +5,11 @@ const {
 } = require('../s3');
 
 exports.postRegister = (req, res, next) => {
-
     const driverFullName = req.body.driverFullName;
     const driverAddress = req.body.driverAddress;
     const driverEmail = req.body.driverEmail;
     const driverPhoneNumber = req.body.driverPhoneNumber;
     const driverId = req.body.driverId;
-    const driverCountry = req.body.driverCountry;
     const driverCity = req.body.driverCity;
     const dateOfBirth = req.body.dateOfBirth;
     const carBrand = req.body.carBrand;
@@ -49,16 +47,18 @@ exports.postRegister = (req, res, next) => {
         return sharp(buffer).toFile(path);
     }
 
+    let mimetypes = [];
+
     let promises = [];
     let promise;
     if (!images) {
         console.log("Files Missing");
     } else {
-
         for (let i = 0; i < images.length; i++) {
             let file = images[i];
             let fileMimetype = file['mimetype'];
             imagesIds[file['originalname']] = file['filename'];
+            mimetypes[file['filename']] = fileMimetype.split('/')[1];
 
             resizeFile(file.path).then(async compressedFile => {
                 promise = await uploadFile(
@@ -69,10 +69,14 @@ exports.postRegister = (req, res, next) => {
                 promises.push(
                     promise
                 );
-                // console.log("compressed file: ", compressedFile);
             })
-
         }
+    }
+
+    const constructLink = imageName => {
+        return `https://${process.env.AWS_BUCKET_NAME}.s3.amazonaws.com/${imagesIds[
+                                    imagesOriginalNames[imageName]
+                                ]}.${mimetypes[imagesIds[imagesOriginalNames[imageName]]]}`
     }
 
     Promise.all(promises).then(function (data) {}).then(val => {
@@ -86,23 +90,21 @@ exports.postRegister = (req, res, next) => {
                     if (fetcheduser) {
                         return res.status(422).send("This Email Is Already Exist!!");
                     } else {
-
                         const captain = new Captain({
                             isAvailable: true,
+                            trialEnded: false,
                             dateOfRenewal: dateOfRenewal,
                             isSubscribed: false,
                             transactionHistory: [],
                             driverData: {
-                                personalImg: `https://${process.env.AWS_BUCKET_NAME}.s3.amazonaws.com/${imagesIds[
-                                    imagesOriginalNames['profilePicture']
-                                ]}.jpg`,
+                                personalImg: constructLink('profilePicture'),
                                 fullName: driverFullName,
                                 dateOfBirth: dateOfBirth,
                                 address: driverAddress,
                                 phone: driverPhoneNumber,
                                 email: driverEmail,
                                 idNumber: driverId,
-                                country: driverCountry,
+                                country: "Egypt",
                                 city: driverCity,
                                 trips: trips
                             },
@@ -116,27 +118,13 @@ exports.postRegister = (req, res, next) => {
                             },
 
                             driverDocuments: {
-                                idFrontPicture: imagesIds[
-                                    imagesOriginalNames['idFrontPicture']
-                                ],
-                                idBackPicture: imagesIds[
-                                    imagesOriginalNames['idBackPicture']
-                                ],
-                                carFrontPicture: imagesIds[
-                                    imagesOriginalNames['carFrontPicture']
-                                ],
-                                carBackPicture: imagesIds[
-                                    imagesOriginalNames['carBackPicture']
-                                ],
-                                driverLicenceFrontPicture: imagesIds[
-                                    imagesOriginalNames['driverLicenceFrontPicture']
-                                ],
-                                driverLicenceBackPicture: imagesIds[
-                                    imagesOriginalNames['driverLicenceBackPicture']
-                                ],
-                                police: imagesIds[
-                                    imagesOriginalNames['police']
-                                ],
+                                idFrontPicture: constructLink('idFrontPicture'),
+                                idBackPicture: constructLink('idBackPicture'),
+                                carFrontPicture: constructLink('carFrontPicture'),
+                                carBackPicture: constructLink('carFrontPicture'),
+                                driverLicenceFrontPicture: constructLink('driverLicenceFrontPicture'),
+                                driverLicenceBackPicture: constructLink('driverLicenceBackPicture'),
+                                police: constructLink('police')
                             }
                         });
                         return captain.save();
@@ -200,7 +188,6 @@ exports.updateCaptain = (req, res, next) => {
     const driverAddress = req.body.data.driverAddress;
     const driverEmail = req.body.data.driverEmail;
     const driverPhoneNumber = req.body.data.driverPhoneNumber;
-    const driverCountry = req.body.data.driverCountry;
     const driverCity = req.body.data.driverCity;
     const dateOfBirth = req.body.data.DateOfBirth;
     const id = req.body.id;
@@ -213,7 +200,6 @@ exports.updateCaptain = (req, res, next) => {
             'driverData.address': driverAddress,
             'driverData.email': driverEmail,
             'driverData.phone': driverPhoneNumber,
-            'driverData.country': driverCountry,
             'driverData.city': driverCity
         })
         .then(val => {
@@ -308,7 +294,6 @@ exports.changeCaptainState = (req, res, next) => {
 
 exports.postLogin = (req, res, next) => {
     const id = (req.body.id).toString();
-    const country = (req.body.country).toString();
     const phoneNumber = (req.body.phoneNumber).toString();
     Captain.findOne({
             "driverData.idNumber": id
@@ -320,7 +305,7 @@ exports.postLogin = (req, res, next) => {
                 });
             }
 
-            if (user.driverData.country == country && ((user.driverData.phone).toString()).slice(-4) == phoneNumber.toString().slice(-4)) {
+            if (((user.driverData.phone).toString()).slice(-4) == phoneNumber.toString().slice(-4)) {
                 res.status(200).json({
                     message: "user exist",
                     id: id
@@ -396,7 +381,8 @@ exports.confirmPayment = (req, res, next) => {
                     "driverData.idNumber": id
                 }, {
                     dateOfRenewal: newDateOfRenewal,
-                    transactionHistory: newTransactionHistory
+                    transactionHistory: newTransactionHistory,
+                    trialEnded: true
                 })
                 .then(val => {
                     res.status(200).json({
@@ -426,6 +412,20 @@ exports.userIdExist = (req, res, next) => {
             } else {
                 res.status(200).json({
                     exist: false
+                });
+            }
+        })
+}
+
+exports.trialEnded = (req, res, next) => {
+    const id = req.params.id;
+    Captain.findOne({
+            "driverData.idNumber": id
+        })
+        .then(captain => {
+            if (captain) {
+                res.status(200).json({
+                    isTrialEnded: captain.trialEnded
                 });
             }
         })

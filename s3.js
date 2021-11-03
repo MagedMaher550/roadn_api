@@ -23,18 +23,6 @@ function uploadFile(file, mimetype, filePath, fileName) {
         ContentType: mimetype,
         ContentLength: file['size']
     }).promise();
-
-    
-    
-
-    // const uploadParams = {
-    //     Bucket: bucketName,
-    //     Body: fileStream,
-    //     Key: file.filename + ".jpg",
-        
-    // }
-
-    // return s3.upload(uploadParams).promise()
 }
 exports.uploadFile = uploadFile
 
